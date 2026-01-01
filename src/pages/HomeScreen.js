@@ -24,13 +24,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const { userStore } = useStore();
 
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>欢迎回来, {userStore.user?.username}!</Text>
       <Text style={styles.info}>这是一个简洁的首页</Text>
+      <View style={{ marginBottom: 50 }}>
+        <Button 
+          title="跳转到 Page2" 
+          onPress={() => navigation.navigate('PageTwo')} 
+          color={theme.primary}
+        />
+      </View>
       <Button 
         title="退出登录" 
         onPress={() => userStore.logout()} 

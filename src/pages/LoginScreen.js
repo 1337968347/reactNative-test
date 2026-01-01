@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
  */
 const LoginScreen = () => {
   const { userStore } = useStore();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('123456');
 
   /**
    * 处理登录操作
@@ -111,7 +111,7 @@ const LoginScreen = () => {
       style={styles.container}
     >
       <View style={styles.card}>
-        <Text style={styles.title}>AwesomeProject</Text>
+        <Text style={styles.title}>陈阳的React Native</Text>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>用户名</Text>

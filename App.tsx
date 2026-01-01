@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import { useStore } from './src/stores/RootStore';
 import LoginScreen from './src/pages/LoginScreen';
 import HomeScreen from './src/pages/HomeScreen';
+import PageTwo from './src/pages/PageTwo';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +18,19 @@ const AppNavigator = observer(() => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userStore.isAuthenticated ? (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen 
+              name="PageTwo" 
+              component={PageTwo} 
+              options={{ 
+                headerShown: true,
+                title: 'Page2',
+                headerBackTitle: '返回',
+                headerTintColor: '#000',
+              }} 
+            />
+          </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />
         )}
