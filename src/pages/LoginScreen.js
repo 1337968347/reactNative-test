@@ -3,55 +3,87 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { observer } from 'mobx-react';
-import { useStore } from '../stores/RootStore'; // 更新导入路径
+import { useStore } from '../stores/RootStore';
+import { theme } from '../styles/theme';
 
 /**
- * 样式定义对象
+ * 样式定义
  */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.background,
     justifyContent: 'center',
-    padding: 20,
+    padding: 24,
   },
-  form: {
-    gap: 15,
+  card: {
+    backgroundColor: theme.white,
+    borderRadius: 12,
+    padding: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    color: theme.primary,
     textAlign: 'center',
+    marginBottom: 30,
+  },
+  inputContainer: {
     marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    borderRadius: 5,
+    borderColor: theme.border,
+    padding: 12,
+    borderRadius: 8,
     fontSize: 16,
+    color: theme.text,
+    backgroundColor: '#fafafa',
   },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-  },
-  loading: {
+  button: {
+    backgroundColor: theme.primary,
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
     marginTop: 10,
   },
-  userInfo: {
-    marginTop: 20,
-    alignItems: 'center',
+  buttonDisabled: {
+    backgroundColor: theme.border,
+  },
+  buttonText: {
+    color: theme.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: theme.danger,
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });
 
 /**
  * 登录屏幕组件
- * 提供用户登录界面和相关功能
  */
 const LoginScreen = () => {
   const { userStore } = useStore();
@@ -60,58 +92,68 @@ const LoginScreen = () => {
 
   /**
    * 处理登录操作
-   * @async
    */
   const handleLogin = async () => {
+    if (!username || !password) {
+      return;
+    }
     try {
       await userStore.login(username, password);
-      Alert.alert('登录成功', `欢迎 ${userStore.user?.username}!`);
-    } catch {
-      Alert.alert('登录失败', userStore.error || '未知错误');
+      // 登录成功后，App.tsx 中的 observer 会自动切换到 HomeScreen
+    } catch (e) {
+      // 错误已由 userStore.error 处理并在界面显示
     }
   };
 
   return (
-    <View style={styles.form}>
-      <Text style={styles.title}>登录</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <View style={styles.card}>
+        <Text style={styles.title}>AwesomeProject</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="用户名"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="密码"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      {userStore.error ? (
-        <Text style={styles.errorText}>{userStore.error}</Text>
-      ) : null}
-
-      <Button
-        title={userStore.isLoading ? '登录中...' : '登录'}
-        onPress={handleLogin}
-        disabled={userStore.isLoading}
-      />
-
-      {userStore.isLoading && (
-        <ActivityIndicator size="large" style={styles.loading} />
-      )}
-
-      {userStore.isAuthenticated && userStore.user && (
-        <View style={styles.userInfo}>
-          <Text>已登录用户: {userStore.user.username}</Text>
-          <Button title="退出登录" onPress={userStore.logout} />
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>用户名</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="请输入用户名"
+            placeholderTextColor="#ccc"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+          />
         </View>
-      )}
-    </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>密码</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="请输入密码"
+            placeholderTextColor="#ccc"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
+
+        {userStore.error ? (
+          <Text style={styles.errorText}>{userStore.error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={[styles.button, userStore.isLoading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={userStore.isLoading}
+        >
+          {userStore.isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>登 录</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

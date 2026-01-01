@@ -1,17 +1,37 @@
+import React from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Provider } from 'mobx-react';
-import { rootStore } from './src/stores/RootStore';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { observer } from 'mobx-react';
+import { useStore } from './src/stores/RootStore';
 import LoginScreen from './src/pages/LoginScreen';
+import HomeScreen from './src/pages/HomeScreen';
+
+const Stack = createNativeStackNavigator();
+
+const AppNavigator = observer(() => {
+  const { userStore } = useStore();
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {userStore.isAuthenticated ? (
+          <Stack.Screen name="Home" component={HomeScreen} />
+        ) : (
+          <Stack.Screen name="Login" component={LoginScreen} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+});
 
 function App() {
   return (
-    <Provider store={rootStore}>
-      <SafeAreaProvider>
-        <StatusBar barStyle={'light-content'} />
-        <LoginScreen />
-      </SafeAreaProvider>
-    </Provider>
+    <SafeAreaProvider>
+      <StatusBar barStyle={'dark-content'} />
+      <AppNavigator />
+    </SafeAreaProvider>
   );
 }
 
